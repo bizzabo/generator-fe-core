@@ -18,7 +18,6 @@ module.exports = class extends Generator {
   }
 
   configuring() {
-    console.log(111);
     var done = this.async();
     exec(`rm -rf  ${DIST}`, function (err, stdout, stderr) {
       if (!err) {
@@ -54,7 +53,6 @@ module.exports = class extends Generator {
   }
 
   writingDocker() {
-    console.log('22')
     var done = this.async();
     this.fs.copyTpl(
       this.templatePath(`Dockerfile`),
@@ -65,7 +63,6 @@ module.exports = class extends Generator {
   }
 
   writingPackageJSON() {
-    console.log('33')
     var done = this.async();
     this.fs.delete('.git/**/*')
     this.fs.copyTpl(
