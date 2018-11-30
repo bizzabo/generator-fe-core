@@ -1,7 +1,8 @@
 {
-    "name": "<%= serviceName %>",
+    "name": "<%= projName %>",
     "version": "0.1.0",
     "private": true,
+    "description": "project for <%= projName %>",
     "dependencies": {
       "next": "^7.0.2",
       "react": "^16.6.3",

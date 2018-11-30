@@ -1,0 +1,110 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      annotations:
+        checksum/config-server: {{ include (print $.Template.BasePath "/server-configmap.yaml") . | sha256sum }}
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      initContainers:
+        - name: {{ .Chart.Name}}-copy-data
+          image: "{{ .Values.global.repositoryUriPrefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+            - cp -r /usr/lib/bizzabo/<%= serviceName %>/app/dist/static /usr/share/nginx/www/
+          volumeMounts:
+            - name: shared
+              mountPath: /usr/share/nginx/www/
+      containers:
+        - name: {{ .Chart.Name }}-nginx
+          image: nginx:1.13.8-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.internalPort }}
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          volumeMounts:
+            - name: shared
+              mountPath: /usr/share/nginx/www/
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/
+          resources:
+{{ toYaml .Values.resourcesNginx | indent 12 }}
+
+
+        - name: {{ .Chart.Name }}-node
+          image: "{{ .Values.global.repositoryUriPrefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --env
+            - {{ .Values.env | default .Values.global.env }}
+          env:
+            - name: K8S_CONFIG_TYPE
+              value: file
+            - name: K8S_CONFIG_FILENAME
+              value: /usr/lib/bizzabo/<%= serviceName %>/kubernetes-config.yaml
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
+            {{- if .Values.global.instanaAgentEnabled }}
+            - name: INSTANA_AGENT
+              value: "{{ .Values.global.instanaAgentEnabled }}"
+            {{- end }}
+            - name: INSTANA_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            # - name: shared
+            #   mountPath: /usr/share/nginx/www/
+#          - name: client-conf
+#            mountPath: /usr/lib/bizzabo/<%= serviceName %>/client/scripts/config/kubernetes/config.js
+#            subPath: config.js
+          - name: server-conf
+            mountPath: /usr/lib/bizzabo/<%= serviceName %>/kubernetes-config.yaml
+            subPath: config.yaml
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+      volumes:
+      - name: shared
+        emptyDir: {}
+      - name: nginx-conf
+        configMap:
+          name: {{ template "fullname" . }}-nginx-conf
+      - name: server-conf
+        configMap:
+          name: {{ template "fullname" . }}-server-conf
+
+
+
+
+
