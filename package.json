@@ -1,0 +1,20 @@
+{
+  "name": "generator-fe-core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "download-git-repo": "^1.1.0",
+    "generator-clone-that": "^1.0.0",
+    "git-clone": "^0.1.0",
+    "yeoman-generator": "^3.1.1"
+  },
+  "files": [
+    "app"
+  ]
+}

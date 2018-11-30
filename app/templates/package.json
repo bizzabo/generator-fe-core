@@ -1,0 +1,36 @@
+{
+    "name": "<%= serviceName %>",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+      "next": "^7.0.2",
+      "react": "^16.6.3",
+      "react-dom": "^16.6.3",
+      "react-scripts": "2.1.1",
+      "@bizzabo/server": "0.0.9",
+      "@zeit/next-css": "1.0.1",
+      "object.values": "1.0.4",
+      "path-match": "1.2.4",
+      "redux": "4.0.1",
+      "react-redux": "5.1.1",
+      "redux-thunk": "2.3.0",
+      "redux-logger": "3.0.6"
+    },
+    "scripts": {
+      "start": "node server",
+      "debug": "node $NODE_DEBUG_OPTION server",
+      "dev": "next start app",
+      "build": "next build app",
+      "test": "react-scripts test"
+    },
+    "eslintConfig": {
+      "extends": "react-app"
+    },
+    "browserslist": [
+      ">0.2%",
+      "not dead",
+      "not ie <= 11",
+      "not op_mini all"
+    ]
+  }
+  
