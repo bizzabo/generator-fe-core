@@ -19,8 +19,9 @@ module.exports = class extends Generator {
 
   configuring() {
     var done = this.async();
-    exec(`cd .. && rm -rf  ${DIST}`, function (err, stdout, stderr) {
-      console.log('done')
+    this.destinationRoot(`${PREFIX}`);
+    exec(`cd .. && rm -Rf  ${DIST}`, function (err, stdout, stderr) {
+      console.log('done', err);
       if (!err) {
         done();
       } else {
@@ -117,4 +118,5 @@ module.exports = class extends Generator {
     })
     done();
   }
+  conflicts(){console.log(arguments);}
 };
