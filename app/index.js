@@ -9,7 +9,7 @@ const DIST = 'dist/*';
 
 const GIT_TEMPLATE = 'git@github.com:bizzabo/web-registration.git';
 const PREFIX = 'dist/';
-//const GIT_TEMPLATE = 'https://github.com/bizzabo/hackathon-2018';
+
 
 module.exports = class extends Generator {
   constructor(args, opts) {
@@ -49,7 +49,7 @@ module.exports = class extends Generator {
       this.destinationRoot(`${PREFIX}${this.answers.projName}`);
       clone(`${GIT_TEMPLATE}`, `.`,{}, function (err) {
         console.log(err)
-        exec(`rm -r  ${DOT_GIT}`, function (err, stdout, stderr) {
+        exec(`rm -rf  ${DOT_GIT}`, function (err, stdout, stderr) {
           if (!err) {
             done();
           } else {
