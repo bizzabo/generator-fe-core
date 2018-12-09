@@ -44,6 +44,12 @@ module.exports = class extends Generator {
           name    : 'serviceName',
           required: true,
           message : 'Enter a name for the new service (i.e.: webregistration): '
+        },
+        {
+          type    : 'input',
+          name    : 'serviceHost',
+          required: true,
+          message : 'Enter a host for the new service (i.e.: registration.bizzabo.com / registration.ext2.clusters.bizzabo.com): '
         }
       ]);
       this.destinationRoot(`${PREFIX}${this.answers.projName}`);
@@ -83,11 +89,22 @@ module.exports = class extends Generator {
 
   writingCircleYaml() {
     var done = this.async();
-    this.fs.delete('.git/**/*')
     this.fs.copyTpl(
       this.templatePath(`config.yml`),
       this.destinationPath(`.circleci/config.yml`),
       { serviceName: this.answers.serviceName, projName: this.answers.projName }
+    );
+    this.fs.delete('.git/**/*');
+    done();
+  }
+  
+  writingCOnfigureNginxFile() {
+    var done = this.async();
+    this.fs.delete('.git/**/*')
+    this.fs.copyTpl(
+      this.templatePath(`configure-nginx.js`),
+      this.destinationPath(`configure-nginx.js`),
+      { serviceName: this.answers.serviceName, projName: this.answers.projName, serviceHost: this.answers.serviceHost }
     );
     this.fs.delete('.git/**/*');
     done();
@@ -98,7 +115,7 @@ module.exports = class extends Generator {
     this.destinationRoot(`../charts`);
     const fileNames = [
       'Chart.yaml', 
-      'Values.yaml', 
+      'values.yaml', 
       'templates/_helpers.tpl', 
       'templates/deployment.yaml', 
       'templates/hpa.yaml',
