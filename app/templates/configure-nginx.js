@@ -28,8 +28,7 @@ const { join, resolve } = require('path');
             {
                 type: 'variables',
                 value: {
-                    conf_nginx_root: staticRoot,
-                    conf_nginx_node_port: 3000
+                    conf_nginx_root: staticRoot
                 }
             },
             { type: 'file', value: 'listen_https.nginx.inc' },

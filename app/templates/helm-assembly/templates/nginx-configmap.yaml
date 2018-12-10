@@ -10,48 +10,54 @@ metadata:
 data:
   nginx.conf: |
     server {
-        listen 80 default_server;
-        set $environment kubernetes;
-        set $root_folder /usr/share/nginx/www;
-        root $root_folder;
+      include /etc/nginx/conf.d/variables.nginx.inc;
+      include /etc/nginx/conf.d/listen_http.nginx.inc;
+      include /etc/nginx/conf.d/base.nginx.inc;
+    }
+  variables.nginx.inc: |
+    set $conf_nginx_root /usr/share/nginx/www/static;
+    set $conf_nginx_node_port {{ .Values.service.nodePort }};
+  listen_http.nginx.inc: |
+    listen {{ .Values.service.internalPort }} default_server;
+  listen_https.nginx.inc: |
+    #For development only. Do not include it in k8s
+    ssl_certificate     certs/prod/star.bizzabo.com.chain.crt;
+    ssl_certificate_key certs/prod/star.bizzabo.com.key;
+    listen 443 ssl;
+    server_name {{ template "common.bizzabo.<%= serviceName %>.host" . }};
+  base.nginx.inc: |
+    proxy_buffer_size 64k;
+    proxy_buffers 4 128k;
+    proxy_busy_buffers_size 128k;
 
-        # ssl certificates
-        #ssl_certificate     certs/prod/star.bizzabo.com.chain.crt;
-        #ssl_certificate_key certs/prod/star.bizzabo.com.key;
+    try_files $uri $uri/ /index.html =404;
 
-        proxy_buffer_size 64k;
-        proxy_buffers 4 128k;
-        proxy_busy_buffers_size 128k;
+    set_real_ip_from  0.0.0.0/0;
+    real_ip_header    X-Forwarded-For;
 
-        try_files $uri $uri/ /index.html =404;
+    location / {
+        expires -1;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
 
+        proxy_pass http://127.0.0.1:$conf_nginx_node_port$request_uri;
+        proxy_redirect off;
+    }
 
-        set_real_ip_from  0.0.0.0/0;
-        real_ip_header    X-Forwarded-For;
+    location /nginx_status {
+      stub_status  on;
+      access_log   off;
+    }
 
-        location / {
-            expires -1;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header Host $http_host;
-            proxy_set_header X-NginX-Proxy true;
+    location = /health {
+        access_log off;
+        default_type text/plain;
+        return 200 "OK";
+    }
 
-            proxy_pass http://127.0.0.1:{{ .Values.service.nodePort }}/;
-            proxy_redirect off;
-        }
-
-        location /nginx_status {
-          stub_status  on;
-          access_log   off;
-        }
-
-        location = /health {
-            access_log off;
-            default_type text/plain;
-            return 200 "OK";
-        }
-
-        location ~* ^/static/.+\.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm|eot|woff|ttf|otf|svg|map|hbs|json)$ {
-            root $root_folder/static;
-        }
+    location /_next/static {
+        root $conf_nginx_root;
+        rewrite ^/_next/static/(.*)$ /$1 break;
     }
