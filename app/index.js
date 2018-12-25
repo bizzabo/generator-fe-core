@@ -7,7 +7,7 @@ const DOT_GIT = '.git';
 const DIST = 'dist/*';
 
 
-const GIT_TEMPLATE = 'git@github.com:bizzabo/web-registration.git';
+const GIT_TEMPLATE = 'git@github.com:bizzabo/fe-core-template.git';
 const PREFIX = 'dist/';
 
 
