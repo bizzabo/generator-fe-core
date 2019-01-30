@@ -9,6 +9,10 @@ metadata:
     release: {{ .Release.Name }}
 data:
   config.yaml: |
-    env: {{ .Values.env | default .Values.global.env }}
-    apiServer: {{ template "common.bizzabo.api_server.url" . }}
     port: {{ .Values.service.nodePort }}
+    webloginEncryptionKey: {{ .Values.webloginEncryptionKey | default .Values.global.webloginEncryptionKey }}
+      public:
+        apiServer: {{ template "common.bizzabo.api_server.url" . }}
+        dashboardUrl: {{ template "common.bizzabo.webdashboard.url" . }}
+        hostUrl: {{ template "common.bizzabo.<%= serviceName %>.url" . }}
+
