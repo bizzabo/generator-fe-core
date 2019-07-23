@@ -2,9 +2,11 @@
 
 ### How to create a Front End Service:
 
+- Run ```npm i```
+
 - Run ```npm install -g yo```
 
-- Run ```yo fe-core --force```
+- Run ```yo ~/git-repos/generator-fe-core/app --force```
 - Give a project name (your github project name) and a service name
 
 -------------------------
