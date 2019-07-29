@@ -2,7 +2,7 @@ replicaCount: 1
 maxUnavailable: 1
 image:
   repository: <%= serviceName %>
-  tag: latest
+  tag: candidate
   pullPolicy: Always
 service:
   name: <%= serviceName %>
