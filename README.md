@@ -4,6 +4,8 @@
 
 - Clone ```generator-fe-core``` into your local
 
+- Run ```cd ~/git-repos/generator-fe-core```
+
 - Run ```npm i```
 
 - Run ```npm install -g yo```
