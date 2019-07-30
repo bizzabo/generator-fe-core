@@ -27,6 +27,6 @@ spec:
     - hosts:
       - {{ template "common.bizzabo.<%= serviceName %>.host" . }}
       {{- if not .Values.useACMCertificate }}
-      secretName: {{ .Values.ingress.tlsSecretName | default "wildcard.ext2.clusters.bizzabo.com" }}
+      secretName: {{ .Values.ingress.tlsSecretName | default "wildcard.ext.dev.bizzabo.com" }}
       {{- end }}
 {{- end -}}
