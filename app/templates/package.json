@@ -20,7 +20,7 @@
       "es6-error": "^4.1.1",
       "js-cookie": "^2.2.0",
       "lodash": "^4.17.11",
-      "next": "^7.0.2",
+      "next": "^9.3.3",
       "next-images": "^1.0.3",
       "next-redux-wrapper": "^2.1.0",
       "notistack": "^0.4.1",
